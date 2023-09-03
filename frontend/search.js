@@ -14,9 +14,11 @@ $(document).ready(function() {
 
 function generateModalContent(reviewData) {
     return reviewData.filter(review => review.text) // ignore reviews without text
-        .map(review => `<h5>${review.author_name}</h5><p>${review.text}</p>`)
+        .map(review => `<h5>${review.author_name}</h5>
+                        <p>${review.text}</p>`)
         .join('');
 }
+
 function openModal(index, type) {
     let modalContent;
     let modal;
@@ -65,15 +67,21 @@ function createResultHtml(data) {
     dataStore = data;
 
     return data.map((item, index) => {
+        const rating = item.result.rating !== undefined ? item.result.rating : 0;
+        const fullStars = '<i class="fas fa-star"></i>'.repeat(Math.floor(rating));
+        const halfStar = ((rating - Math.floor(rating)) !== 0 ) ? '<i class="fas fa-star-half-alt"></i>' : '';
+        const ratingHTML = `${fullStars}${halfStar}`;
         let details = {
-            name: item.result.name,
-            address: item.result.formatted_address,
-            phoneNumber: item.result.formatted_phone_number,
-            reviews: Array.isArray(item.result.reviews) ? item.result.reviews.length : 0,
-            website: item.result.website || "Não disponível",
-            url: item.result.url || "Não disponível",
-            rating: item.result.rating !== undefined ? `<i class="fas fa-star"></i> ${item.result.rating}` : '<i class="fas fa-star"></i> 0',
-            isOpen: item.result.opening_hours && item.result.opening_hours.open_now ? "<span class='badge bg-success'>Aberto</span>" : "<span class='badge bg-danger'>Fechado</span>",
+            name: item.result.name || 'Not Available',
+            address: item.result.formatted_address || 'Not Available',
+            phoneNumber: item.result.formatted_phone_number || 'Not Available',
+            reviews: item.result.reviews && Array.isArray(item.result.reviews) ? item.result.reviews.length : 0,
+            website: item.result.website || "Not Available",
+            url: item.result.url || "Not Available",
+            rating: ratingHTML,
+            isOpen: item.result.opening_hours && item.result.opening_hours.open_now
+                ? "<span class='badge bg-success'><i class='fas fa-arrow-up'></i> Open</span>"
+                : "<span class='badge bg-danger'><i class='fas fa-arrow-down'></i> Closed</span>"
         };
         return getTableRow(details, index);
     }).join("");
@@ -101,6 +109,7 @@ document.getElementById("myForm").addEventListener("submit", function(event) {
     fetch(`http://localhost:8080/search?query=${query}`, { method: 'GET' })
         .then(response => response.json())
         .then(data => {
+            const resultHtml = createResultHtml(data);
             document.getElementById("resultTable").querySelector("tbody").innerHTML = resultHtml; // depois atualizar os dados
             table = $('#resultTable').DataTable({ // finalmente, recriar a tabela
                 "language": {
