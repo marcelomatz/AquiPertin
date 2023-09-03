@@ -14,8 +14,14 @@ $(document).ready(function() {
 
 function generateModalContent(reviewData) {
     return reviewData.filter(review => review.text) // ignore reviews without text
-        .map(review => `<h5>${review.author_name}</h5>
-                        <p>${review.text}</p>`)
+        .map(review => {
+            console.log(review.rating); // Add this line
+            let rating = parseFloat(review.rating) || 0;
+            let fullStars = '<i class="fas fa-star"></i>'.repeat(Math.floor(rating));
+            let halfStar = ((rating - Math.floor(rating)) !== 0 ) ? '<i class="fas fa-star-half-alt"></i>' : '';
+            return `<h5>${review.author_name} ${fullStars}${halfStar}</h5>
+                    <p>${review.text}</p>`;
+        })
         .join('');
 }
 
