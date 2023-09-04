@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/gorilla/handlers"
 	"github.com/joho/godotenv"
-	_ "github.com/joho/godotenv"
 	"io"
 	"log"
 	"net/http"

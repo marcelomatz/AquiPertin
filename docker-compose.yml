@@ -5,7 +5,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - 8080:8080
+      - "8080:8080"
     environment:
       - GCP_TOKEN_PLACE_API=${GCP_TOKEN_PLACE_API}
 
@@ -15,4 +15,4 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - 80:80
+      - "80:80"
